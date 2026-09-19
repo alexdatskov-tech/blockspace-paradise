@@ -23,7 +23,7 @@ import servaricaAsset from "@/assets/servarica-logo.png.asset.json";
 import trustpilotAsset from "@/assets/trustpilot-logo.svg.asset.json";
 
 const plans = [
-  { ram: 2, cpu: 2, storage: 60, monthly: 9, yearly: 79, discount: 23 },
+  { ram: 2, cpu: 2, storage: 60, monthly: 6, originalMonthly: 9, yearly: 58, discount: 33 },
   { ram: 4, cpu: 4, storage: 120, monthly: 14, yearly: 134, popular: true },
   { ram: 6, cpu: 6, storage: 180, monthly: 19, yearly: 189 },
   { ram: 8, cpu: 8, storage: 240, monthly: 24, yearly: 244 },
@@ -49,16 +49,26 @@ const features = [
 const tierNames = ["Sprout", "Copper", "Iron", "Gold", "Diamond", "Emerald", "Netherite"];
 
 function PlanGlyph({ index }: { index: number }) {
-  const cells = Array.from({ length: Math.min(index + 1, 7) });
+  const blockStyles = [
+    { top: "fill-primary", left: "fill-primary/65", right: "fill-primary/35", detail: "fill-background/55" },
+    { top: "fill-gold", left: "fill-gold/65", right: "fill-gold/35", detail: "fill-background/45" },
+    { top: "fill-foreground", left: "fill-muted-foreground", right: "fill-foreground/55", detail: "fill-background/55" },
+    { top: "fill-gold", left: "fill-gold/70", right: "fill-gold/45", detail: "fill-foreground/70" },
+    { top: "fill-primary", left: "fill-primary/70", right: "fill-primary/45", detail: "fill-foreground/75" },
+    { top: "fill-primary", left: "fill-primary/75", right: "fill-primary/45", detail: "fill-background/60" },
+    { top: "fill-muted-foreground", left: "fill-muted", right: "fill-secondary", detail: "fill-primary/45" },
+  ][index];
+
+  if (!blockStyles) return null;
+
   return (
-    <svg viewBox="0 0 44 44" role="img" aria-label={`${tierNames[index]} tier emblem`} className="size-11 overflow-visible">
-      <path d="M22 2 40 12v20L22 42 4 32V12Z" className="fill-primary/10 stroke-primary/55" strokeWidth="1.5" />
-      <path d="m22 7 13 7v14l-13 7-13-7V14Z" className="fill-background/60 stroke-border" />
-      {cells.map((_, cell) => {
-        const angle = (cell / Math.max(cells.length, 1)) * Math.PI * 2 - Math.PI / 2;
-        const radius = cells.length === 1 ? 0 : 7;
-        return <rect key={cell} x={19 + Math.cos(angle) * radius} y={19 + Math.sin(angle) * radius} width="6" height="6" rx="1" className="fill-primary" />;
-      })}
+    <svg viewBox="0 0 52 52" role="img" aria-label={`${tierNames[index]} Minecraft block`} className="size-13 overflow-visible drop-shadow-lg" shapeRendering="crispEdges">
+      <path d="M26 3 48 14 26 25 4 14Z" className={blockStyles.top} />
+      <path d="M4 14 26 25v24L4 38Z" className={blockStyles.left} />
+      <path d="m26 25 22-11v24L26 49Z" className={blockStyles.right} />
+      <path d="m10 13 8-4 5 3-8 4Zm19-5 5 3-5 3-5-3Zm3 22 6-3v6l-6 3ZM9 23l7 4v6l-7-4Z" className={blockStyles.detail} />
+      {index === 0 && <path d="M4 14 26 25v6L4 20Zm22 11 22-11v6L26 31Z" className="fill-background/45" />}
+      {index === 6 && <path d="m8 33 14 7v4L8 37Zm23-14 12-6 3 2-12 6Z" className="fill-primary/35" />}
     </svg>
   );
 }
@@ -155,10 +165,10 @@ function HomePage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--background)_0%,transparent_68%)] opacity-90" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
           <div className="max-w-3xl animate-rise-soft">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary backdrop-blur-md">
+            <Link to="/status" className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/15">
               <span className="animate-status size-1.5 rounded-full bg-primary" />
-              All systems operational
-            </div>
+              Systems operational <span className="text-primary/70">· Click for status</span>
+            </Link>
             <h1 className="text-balance text-5xl font-bold leading-[1.02] sm:text-6xl md:text-7xl lg:text-[5.4rem]">
               Your world.<br /><span className="text-primary">Unchained.</span>
             </h1>
@@ -186,10 +196,10 @@ function HomePage() {
       <section id="features" className="px-4 py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 max-w-2xl"><p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Performance by design</p><h2 className="text-balance text-3xl font-bold sm:text-5xl">Built to keep up with your imagination.</h2></div>
-          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {features.map(({ icon: Icon, title, text }) => (
-              <article key={title} className="bg-surface p-7 transition-colors hover:bg-secondary/70 md:p-9">
-                <div className="mb-8 grid size-11 place-items-center rounded-md border border-primary/20 bg-primary/10 text-primary"><Icon /></div>
+              <article key={title} className="group rounded-xl border border-border bg-card p-7 transition-[transform,border-color,box-shadow,background-color] duration-500 ease-out hover:-translate-y-2 hover:border-primary/60 hover:bg-secondary/55 hover:shadow-[0_0_34px_color-mix(in_oklab,var(--primary)_22%,transparent)] md:p-9">
+                <div className="mb-8 grid size-11 place-items-center rounded-lg border border-primary/25 bg-primary/10 text-primary transition-all duration-500 group-hover:border-primary/60 group-hover:bg-primary/15 group-hover:shadow-[0_0_24px_color-mix(in_oklab,var(--primary)_28%,transparent)]"><Icon /></div>
                 <h3 className="text-xl font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
               </article>
             ))}
@@ -218,7 +228,10 @@ function HomePage() {
                 {plan.popular && <span className="absolute -top-3 left-4 rounded bg-primary px-2.5 py-1 text-[10px] font-bold uppercase text-primary-foreground">Most popular</span>}
                 {plan.discount && <span className="absolute right-3 top-3 rounded-md border border-gold/30 bg-gold/10 px-2 py-1 text-[10px] font-bold text-gold">−{plan.discount}%</span>}
                 <div className="flex items-center justify-between"><div className="transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110"><PlanGlyph index={index} /></div><span className="text-xs text-muted-foreground">{tierNames[index]}</span></div>
-                <div className="mt-6"><span className="text-4xl font-bold">${annual ? Math.round(plan.yearly / 12) : plan.monthly}</span><span className="text-sm text-muted-foreground"> /mo</span></div>
+                 <div className="mt-6 flex items-end gap-2">
+                   {!annual && plan.originalMonthly && <span className="mb-1 text-lg font-semibold text-muted-foreground line-through decoration-destructive decoration-2">${plan.originalMonthly}</span>}
+                   <span className="text-4xl font-bold">${annual ? Math.round(plan.yearly / 12) : plan.monthly}</span><span className="mb-1 text-sm text-muted-foreground">/mo</span>
+                 </div>
                 {annual && <p className="mt-1 text-xs text-primary">${plan.yearly} billed yearly</p>}
                 <ul className="my-6 grid gap-3 text-sm text-muted-foreground">
                   <li className="flex items-center gap-2"><Database className="size-4 text-primary" /><strong className="text-foreground">{plan.ram} GB</strong> RAM</li>
