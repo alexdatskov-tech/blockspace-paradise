@@ -15,4 +15,4 @@
 - [x] Refine the Servarica partner card
 - [x] Add encryption, secure tunnel, Hangar, and panel technology details
 - [x] Build a dedicated About page
-- [ ] Recheck desktop and mobile previews
+- [x] Recheck desktop and mobile previews
