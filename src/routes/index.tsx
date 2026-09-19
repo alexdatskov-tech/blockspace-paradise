@@ -176,8 +176,8 @@ function HomePage() {
           <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-2xl"><p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Pick your power</p><h2 className="text-balance text-3xl font-bold sm:text-5xl">No mystery. Just more world.</h2><p className="mt-4 text-muted-foreground">Every plan includes NVMe storage, protection, backups, and our full control panel.</p></div>
             <div className="inline-flex w-fit rounded-md border border-border bg-secondary/60 p-1">
-              <button onClick={() => setAnnual(false)} className={`rounded px-4 py-2 text-xs font-semibold transition-colors ${!annual ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>Monthly</button>
-              <button onClick={() => setAnnual(true)} className={`rounded px-4 py-2 text-xs font-semibold transition-colors ${annual ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>Yearly <span className="ml-1 opacity-75">Save 10%</span></button>
+              <Button size="sm" variant={!annual ? "default" : "ghost"} onClick={() => setAnnual(false)}>Monthly</Button>
+              <Button size="sm" variant={annual ? "default" : "ghost"} onClick={() => setAnnual(true)}>Yearly <span className="ml-1 opacity-75">Save 10%</span></Button>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -6,4 +6,4 @@
 - [x] Add Servarica partner attribution and logo
 - [x] Add animated review rail and interface motion
 - [x] Add polished login page
-- [ ] Verify desktop and mobile previews
+- [x] Verify desktop and mobile previews
