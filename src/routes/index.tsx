@@ -3,30 +3,30 @@ import {
   ArrowRight,
   Box,
   Check,
-  ChevronDown,
   CircleGauge,
   Clock3,
   Cpu,
   Database,
-  Gem,
   Globe2,
   HardDrive,
   Menu,
   ShieldCheck,
   Sparkles,
-  Star,
+  LockKeyhole,
+  Network,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import heroAsset from "@/assets/voxel-mountain.jpg.asset.json";
+import heroAsset from "@/assets/blockforge-world.jpg";
 import servaricaAsset from "@/assets/servarica-logo.png.asset.json";
+import trustpilotAsset from "@/assets/trustpilot-logo.svg.asset.json";
 
 const plans = [
-  { ram: 2, cpu: 2, storage: 60, monthly: 9, yearly: 79 },
-  { ram: 4, cpu: 4, storage: 120, monthly: 14, yearly: 134 },
+  { ram: 2, cpu: 2, storage: 60, monthly: 9, yearly: 79, discount: 23 },
+  { ram: 4, cpu: 4, storage: 120, monthly: 14, yearly: 134, popular: true },
   { ram: 6, cpu: 6, storage: 180, monthly: 19, yearly: 189 },
-  { ram: 8, cpu: 8, storage: 240, monthly: 24, yearly: 244, popular: true },
+  { ram: 8, cpu: 8, storage: 240, monthly: 24, yearly: 244 },
   { ram: 12, cpu: 12, storage: 360, monthly: 34, yearly: 354 },
   { ram: 16, cpu: 16, storage: 480, monthly: 44, yearly: 464 },
   { ram: 24, cpu: 24, storage: 720, monthly: 64, yearly: 684 },
@@ -45,6 +45,45 @@ const features = [
   { icon: ShieldCheck, title: "Always protected", text: "DDoS protection and automatic backups included." },
   { icon: CircleGauge, title: "No lag excuses", text: "High-clock CPUs and fast NVMe storage on every plan." },
 ];
+
+const tierNames = ["Sprout", "Copper", "Iron", "Gold", "Diamond", "Emerald", "Netherite"];
+
+function PlanGlyph({ index }: { index: number }) {
+  const cells = Array.from({ length: Math.min(index + 1, 7) });
+  return (
+    <svg viewBox="0 0 44 44" role="img" aria-label={`${tierNames[index]} tier emblem`} className="size-11 overflow-visible">
+      <path d="M22 2 40 12v20L22 42 4 32V12Z" className="fill-primary/10 stroke-primary/55" strokeWidth="1.5" />
+      <path d="m22 7 13 7v14l-13 7-13-7V14Z" className="fill-background/60 stroke-border" />
+      {cells.map((_, cell) => {
+        const angle = (cell / Math.max(cells.length, 1)) * Math.PI * 2 - Math.PI / 2;
+        const radius = cells.length === 1 ? 0 : 7;
+        return <rect key={cell} x={19 + Math.cos(angle) * radius} y={19 + Math.sin(angle) * radius} width="6" height="6" rx="1" className="fill-primary" />;
+      })}
+    </svg>
+  );
+}
+
+function LiveServerCard() {
+  const [cpu, setCpu] = useState(28);
+  const [memory, setMemory] = useState(5.2);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCpu((value) => Math.max(18, Math.min(68, value + Math.round(Math.random() * 14 - 7))));
+      setMemory((value) => Math.max(4.6, Math.min(6.9, Number((value + (Math.random() * 0.34 - 0.17)).toFixed(1)))));
+    }, 1800);
+    return () => window.clearInterval(timer);
+  }, []);
+  return (
+    <div className="glass-panel ml-auto w-full max-w-sm rounded-xl p-5">
+      <div className="flex items-center justify-between border-b border-border pb-4"><div><p className="text-xs text-muted-foreground">Your server</p><p className="mt-1 font-display font-semibold">emberfall.blockforge.gg</p></div><span className="flex items-center gap-2 text-xs font-semibold text-primary"><span className="animate-status size-2 rounded-full bg-primary" /> Live</span></div>
+      <div className="grid grid-cols-2 gap-3 py-4">
+        <div className="rounded-md border border-border bg-background/35 p-3"><Cpu className="mb-4 size-4 text-primary" /><p className="font-display text-2xl font-bold tabular-nums transition-all duration-700">{cpu}%</p><p className="text-xs text-muted-foreground">CPU load</p><div className="mt-2 h-1 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary transition-all duration-1000" style={{ width: `${cpu}%` }} /></div></div>
+        <div className="rounded-md border border-border bg-background/35 p-3"><Database className="mb-4 size-4 text-gold" /><p className="font-display text-2xl font-bold tabular-nums transition-all duration-700">{memory.toFixed(1)} GB</p><p className="text-xs text-muted-foreground">Memory</p><div className="mt-2 h-1 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-gold transition-all duration-1000" style={{ width: `${(memory / 8) * 100}%` }} /></div></div>
+      </div>
+      <div className="flex items-center justify-between rounded-md bg-primary/10 px-3 py-3 text-sm"><span className="text-muted-foreground">Players online</span><strong className="text-primary">42 / 100</strong></div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,6 +120,7 @@ function Header() {
           <a href="#plans" className="transition-colors hover:text-foreground">Plans</a>
           <a href="#features" className="transition-colors hover:text-foreground">Performance</a>
           <a href="#reviews" className="transition-colors hover:text-foreground">Reviews</a>
+          <Link to="/about" className="transition-colors hover:text-foreground">About</Link>
         </nav>
         <div className="hidden items-center gap-2 md:flex">
           <Button variant="ghost" asChild><Link to="/login">Log in</Link></Button>
@@ -95,6 +135,7 @@ function Header() {
           <a href="#plans" className="rounded-md px-3 py-2 text-sm" onClick={() => setOpen(false)}>Plans</a>
           <a href="#features" className="rounded-md px-3 py-2 text-sm" onClick={() => setOpen(false)}>Performance</a>
           <a href="#reviews" className="rounded-md px-3 py-2 text-sm" onClick={() => setOpen(false)}>Reviews</a>
+          <Link to="/about" className="rounded-md px-3 py-2 text-sm" onClick={() => setOpen(false)}>About</Link>
           <Button variant="hero" asChild><Link to="/login">Log in</Link></Button>
         </div>
       )}
@@ -109,11 +150,11 @@ function HomePage() {
       <Header />
 
       <section className="relative min-h-[92svh] overflow-hidden px-4 pb-16 pt-32 md:pt-40">
-        <img src={heroAsset.url} alt="Rocky mountain landscape emerging through cloud" className="absolute inset-0 size-full object-cover object-center opacity-55" />
+        <img src={heroAsset} width={1920} height={1080} alt="Voxel forest and block-built village beneath an emerald aurora" className="absolute inset-0 size-full object-cover object-center opacity-65" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--background)_0%,transparent_22%,transparent_52%,var(--background)_96%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--background)_0%,transparent_68%)] opacity-90" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
-          <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="max-w-3xl animate-rise-soft">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary backdrop-blur-md">
               <span className="animate-status size-1.5 rounded-full bg-primary" />
               All systems operational
@@ -135,22 +176,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="animate-float hidden lg:block">
-            <div className="glass-panel ml-auto w-full max-w-sm rounded-lg p-5">
-              <div className="flex items-center justify-between border-b border-border pb-4">
-                <div>
-                  <p className="text-xs text-muted-foreground">Your server</p>
-                  <p className="mt-1 font-display font-semibold">emberfall.blockforge.gg</p>
-                </div>
-                <span className="flex items-center gap-2 text-xs font-semibold text-primary"><span className="animate-status size-2 rounded-full bg-primary" /> Online</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 py-4">
-                <div className="rounded-md border border-border bg-background/35 p-3"><Cpu className="mb-4 size-4 text-primary" /><p className="text-2xl font-bold">28%</p><p className="text-xs text-muted-foreground">CPU load</p></div>
-                <div className="rounded-md border border-border bg-background/35 p-3"><Database className="mb-4 size-4 text-gold" /><p className="text-2xl font-bold">5.2 GB</p><p className="text-xs text-muted-foreground">Memory</p></div>
-              </div>
-              <div className="flex items-center justify-between rounded-md bg-primary/10 px-3 py-3 text-sm"><span className="text-muted-foreground">Players online</span><strong className="text-primary">42 / 100</strong></div>
-            </div>
-          </div>
+          <div className="animate-float hidden lg:block"><LiveServerCard /></div>
         </div>
         <div className="relative mx-auto mt-20 flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-border pt-5 text-xs text-muted-foreground">
           <span>Built for Java & Bedrock</span><span>10 Gbps network</span><span>Global-ready infrastructure</span><span>Full mod & plugin support</span>
@@ -168,6 +194,11 @@ function HomePage() {
               </article>
             ))}
           </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="glass-panel smooth-lift rounded-lg p-5"><LockKeyhole className="mb-4 size-5 text-primary" /><h3 className="font-semibold">Encrypted control</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">The Minecraft panel uses AES-256-GCM encryption for protected account data.</p></div>
+            <div className="glass-panel smooth-lift rounded-lg p-5"><Network className="mb-4 size-5 text-primary" /><h3 className="font-semibold">Secure tunnels</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Minecraft server traffic runs over secure, isolated network tunnels.</p></div>
+            <div className="glass-panel smooth-lift rounded-lg p-5"><Sparkles className="mb-4 size-5 text-primary" /><h3 className="font-semibold">Hangar-ready</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Plugin discovery is powered by <a href="https://hangar.papermc.io/" target="_blank" rel="noreferrer" className="text-primary hover:underline">Hangar by PaperMC</a>.</p></div>
+          </div>
         </div>
       </section>
 
@@ -177,14 +208,16 @@ function HomePage() {
             <div className="max-w-2xl"><p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Pick your power</p><h2 className="text-balance text-3xl font-bold sm:text-5xl">No mystery. Just more world.</h2><p className="mt-4 text-muted-foreground">Every plan includes NVMe storage, protection, backups, and our full control panel.</p></div>
             <div className="inline-flex w-fit rounded-md border border-border bg-secondary/60 p-1">
               <Button size="sm" variant={!annual ? "default" : "ghost"} onClick={() => setAnnual(false)}>Monthly</Button>
-              <Button size="sm" variant={annual ? "default" : "ghost"} onClick={() => setAnnual(true)}>Yearly <span className="ml-1 opacity-75">Save 10%</span></Button>
+              <Button size="sm" variant={annual ? "default" : "ghost"} onClick={() => setAnnual(true)}>Yearly <span className="ml-1 opacity-75">Save 20%</span></Button>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {plans.map((plan) => (
-              <article key={plan.ram} className={`relative flex min-h-[340px] flex-col rounded-lg border p-5 transition-transform duration-300 hover:-translate-y-1 ${plan.popular ? "border-primary/55 bg-primary/10 shadow-[0_20px_60px_color-mix(in_oklab,var(--primary)_10%,transparent)]" : "border-border bg-card"}`}>
+            {plans.map((plan, index) => (
+              <article key={plan.ram} className={`group relative flex min-h-[350px] flex-col overflow-hidden rounded-lg border p-5 smooth-lift ${plan.popular ? "border-primary/55 bg-primary/10 shadow-[0_20px_60px_color-mix(in_oklab,var(--primary)_10%,transparent)]" : "border-border bg-card hover:border-primary/30"}`}>
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -translate-x-[160%] skew-x-[-18deg] bg-primary/5 group-hover:animate-shimmer" />
                 {plan.popular && <span className="absolute -top-3 left-4 rounded bg-primary px-2.5 py-1 text-[10px] font-bold uppercase text-primary-foreground">Most popular</span>}
-                <div className="flex items-center justify-between"><div className="grid size-10 place-items-center rounded-md bg-secondary text-primary"><Gem className="size-5" /></div><span className="text-xs text-muted-foreground">Block {plan.ram}</span></div>
+                {plan.discount && <span className="absolute right-3 top-3 rounded-md border border-gold/30 bg-gold/10 px-2 py-1 text-[10px] font-bold text-gold">−{plan.discount}%</span>}
+                <div className="flex items-center justify-between"><div className="transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110"><PlanGlyph index={index} /></div><span className="text-xs text-muted-foreground">{tierNames[index]}</span></div>
                 <div className="mt-6"><span className="text-4xl font-bold">${annual ? Math.round(plan.yearly / 12) : plan.monthly}</span><span className="text-sm text-muted-foreground"> /mo</span></div>
                 {annual && <p className="mt-1 text-xs text-primary">${plan.yearly} billed yearly</p>}
                 <ul className="my-6 grid gap-3 text-sm text-muted-foreground">
@@ -201,18 +234,18 @@ function HomePage() {
       </section>
 
       <section className="px-4 py-12">
-        <div className="glass-panel mx-auto flex max-w-4xl flex-col items-center justify-between gap-6 rounded-lg p-7 text-center sm:flex-row sm:text-left">
-          <div className="flex items-center gap-4"><img src={servaricaAsset.url} alt="Servarica logo" className="size-12 rounded-md bg-foreground/95 p-1.5" /><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Powered by our partner</p><p className="mt-1 font-display text-xl font-bold">Servarica</p></div></div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="size-5 text-primary" /> Reliable infrastructure. Forged for play.</div>
+        <div className="glass-panel mx-auto flex max-w-2xl flex-col items-center justify-between gap-4 rounded-2xl px-5 py-4 text-center sm:flex-row sm:text-left">
+          <div className="flex items-center gap-3"><img src={servaricaAsset.url} alt="Servarica logo" className="size-9 rounded-lg bg-foreground/95 p-1" /><div><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Powered by our partner</p><p className="font-display text-base font-bold">Servarica</p></div></div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 text-primary" /> Reliable infrastructure. Forged for play.</div>
         </div>
       </section>
 
       <section id="reviews" className="overflow-hidden py-24">
-        <div className="mx-auto mb-10 max-w-7xl px-4 text-center"><p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Player approved</p><h2 className="text-3xl font-bold sm:text-5xl">Worlds worth staying for.</h2></div>
+        <div className="mx-auto mb-10 max-w-7xl px-4 text-center"><p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Player approved</p><h2 className="text-3xl font-bold sm:text-5xl">Worlds worth staying for.</h2><a href="https://www.trustpilot.com/" target="_blank" rel="noreferrer" className="mx-auto mt-6 inline-flex items-center gap-3 rounded-md border border-border bg-secondary/55 px-4 py-2 transition-colors hover:border-primary/30"><img src={trustpilotAsset.url} alt="Trustpilot" className="h-5 w-auto" /><span className="text-xs text-muted-foreground">Community rating · View reviews</span></a></div>
         <div className="group flex w-max animate-marquee gap-4 px-2 hover:[animation-play-state:paused]">
           {[...reviews, ...reviews].map((review, index) => (
-            <article key={`${review.name}-${index}`} className="glass-panel w-[320px] shrink-0 rounded-lg p-6 sm:w-[390px]">
-              <div className="mb-5 flex items-center justify-between"><div className="flex gap-1 text-gold">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`size-4 ${i < Math.floor(review.score) ? "fill-current" : "opacity-35"}`} />)}</div><strong className="text-sm">{review.score.toFixed(1)}</strong></div>
+            <article key={`${review.name}-${index}`} className="glass-panel smooth-lift w-[320px] shrink-0 rounded-lg p-6 sm:w-[390px]">
+              <div className="mb-5 flex items-center justify-between"><div className="flex gap-1">{Array.from({ length: 5 }).map((_, i) => <span key={i} className={`grid size-6 place-items-center rounded-sm ${i < Math.ceil(review.score) ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>★</span>)}</div><strong className="text-sm">{review.score.toFixed(1)}</strong></div>
               <p className="min-h-14 text-sm leading-6">“{review.text}”</p><div className="mt-5 border-t border-border pt-4"><p className="text-sm font-bold">{review.name}</p><p className="text-xs text-muted-foreground">{review.server}</p></div>
             </article>
           ))}
@@ -229,7 +262,7 @@ function HomePage() {
       </section>
 
       <footer className="border-t border-border px-4 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><Brand /><p className="text-xs text-muted-foreground">© 2026 BlockForge. Not affiliated with Mojang or Microsoft.</p><div className="flex gap-5 text-xs text-muted-foreground"><a href="#plans">Plans</a><Link to="/login">Log in</Link></div></div>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><Brand /><p className="text-xs text-muted-foreground">© 2026 BlockForge. Not affiliated with Mojang or Microsoft.</p><div className="flex gap-5 text-xs text-muted-foreground"><a href="#plans">Plans</a><Link to="/about">About</Link><Link to="/login">Log in</Link></div></div>
       </footer>
     </main>
   );
