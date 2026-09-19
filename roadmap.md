@@ -16,3 +16,8 @@
 - [x] Add encryption, secure tunnel, Hangar, and panel technology details
 - [x] Build a dedicated About page
 - [x] Recheck desktop and mobile previews
+- [ ] Replace plan emblems with Minecraft block icons
+- [ ] Update the first plan to show $9 crossed out and $6 monthly
+- [ ] Restyle the three performance highlights as animated glowing cards
+- [ ] Link the systems badge to a dedicated beta status page
+- [ ] Verify the updated home and status pages on desktop and mobile
