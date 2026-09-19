@@ -77,6 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "BlockForge" },
+      {
+        name: "description",
+        content:
+          "Fast Minecraft server hosting with instant setup, NVMe storage, and 10 Gbps connectivity.",
+      },
+      { property: "og:title", content: "BlockForge" },
+      {
+        property: "og:description",
+        content:
+          "Fast Minecraft server hosting with instant setup, NVMe storage, and 10 Gbps connectivity.",
+      },
       { name: "author", content: "BlockForge" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
