@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import heroAsset from "@/assets/voxel-mountain.jpg.asset.json";
+import cavernAsset from "@/assets/blockforge-cavern.jpg";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -25,10 +25,10 @@ function LoginPage() {
   const submit = (event: FormEvent) => { event.preventDefault(); setSubmitted(true); };
   return (
     <main className="relative grid min-h-screen place-items-center overflow-hidden px-4 py-10">
-      <img src={heroAsset.url} alt="Rocky mountain landscape" className="absolute inset-0 size-full object-cover opacity-35" />
+      <img src={cavernAsset} width={1920} height={1080} alt="Voxel cavern fortress lit by emerald crystals" className="animate-slow-pan absolute inset-0 size-full object-cover opacity-55" />
       <div className="absolute inset-0 bg-[linear-gradient(120deg,var(--background)_15%,transparent_70%,var(--background))]" />
       <Link to="/" className="absolute left-5 top-5 z-10 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"><ArrowLeft className="size-4" /> Back to BlockForge</Link>
-      <section className="glass-panel-strong relative z-10 w-full max-w-md rounded-lg p-6 sm:p-8">
+      <section className="glass-panel-strong animate-rise-soft relative z-10 w-full max-w-md rounded-xl p-6 sm:p-8">
         <div className="mb-8 flex items-center gap-2.5 font-display text-xl font-bold"><span className="grid size-9 place-items-center rounded-md bg-primary/15 text-primary"><Box className="size-5" /></span>BlockForge</div>
         <h1 className="text-3xl font-bold">Welcome back.</h1><p className="mt-2 text-sm text-muted-foreground">Your worlds are right where you left them.</p>
         <form onSubmit={submit} className="mt-8 grid gap-5">
