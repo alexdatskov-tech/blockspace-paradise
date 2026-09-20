@@ -468,7 +468,7 @@ function HomePage() {
                 ]}
               />
             </div>
-            <LiveServerCard />
+            <LiveServerCard className="animate-float-soft" />
           </div>
         </div>
 
