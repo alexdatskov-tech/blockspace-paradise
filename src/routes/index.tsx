@@ -28,13 +28,16 @@ import { VerticalTicker } from "@/components/VerticalTicker";
 import {
   PROVISION_TIME,
   SSH_ADDON_PRICE,
+  allRegions,
   formatUsd,
   platformFor,
   platforms,
   premiumPlans,
-  regions,
+  regionsFor,
+  regionsForPlan,
   standardPlans,
   type Plan,
+  type Region,
 } from "@/lib/plans";
 
 const features = [
@@ -77,7 +80,11 @@ const faqs = [
   },
   {
     q: "Which regions can I deploy in, and do they cost more?",
-    a: "Amsterdam, Warsaw, Milan, Helsinki and Ashburn. Every region is the same price on every plan — there is no regional surcharge. If you are not sure which is closest, the region picker has an auto-select that measures for you.",
+    a: "The two ranges sit in different datacentres, so they offer different regions. Standard: Amsterdam, Warsaw, Milan, Helsinki and Ashburn. Premium: Amsterdam, London, Madrid, Milan and Helsinki. Every region costs the same — there is no regional surcharge anywhere — and the region picker can auto-select the closest one for you.",
+  },
+  {
+    q: "Is there any tax or VAT added at checkout?",
+    a: "No. We bill 0% VAT and 0% sales tax: the price on the plan is the exact amount charged, with no surcharge added on the payment page.",
   },
   {
     q: "Do I get SSH access to the server?",
@@ -238,8 +245,8 @@ function Header() {
   );
 }
 
-/** Flags of every region we deploy in, at one price. */
-function RegionStrip({ className = "" }: { className?: string }) {
+/** Flags of a set of regions, all at one price. */
+function RegionStrip({ regions, className = "" }: { regions: Region[]; className?: string }) {
   return (
     <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 ${className}`}>
       {regions.map((region) => (
@@ -329,7 +336,7 @@ function PlanCard({ plan, annual }: { plan: Plan; annual: boolean }) {
       <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-3.5">
         <span className="label-tiny">Regions</span>
         <span className="flex items-center gap-1.5">
-          {regions.map((region) => (
+          {regionsForPlan(plan).map((region) => (
             <FlagIcon key={region.code} code={region.code} className="h-3 w-4.5" />
           ))}
         </span>
@@ -478,7 +485,7 @@ function HomePage() {
             <p className="text-xs font-medium text-foreground">
               Deploy in any region — same price everywhere
             </p>
-            <RegionStrip />
+            <RegionStrip regions={allRegions} />
           </div>
         </div>
       </section>
@@ -566,9 +573,13 @@ function HomePage() {
                   </p>
                 </div>
               </div>
-              <p className="shrink-0 text-[11px] text-muted-foreground sm:max-w-45 sm:text-right">
-                The exact model within the series varies by node.
-              </p>
+              <div className="shrink-0 sm:text-right">
+                <p className="label-tiny">Regions for this range</p>
+                <RegionStrip regions={regionsFor(tier)} className="mt-1.5 sm:justify-end" />
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Exact model within the series varies by node.
+                </p>
+              </div>
             </div>
           </Reveal>
 
@@ -728,7 +739,7 @@ function HomePage() {
                 <Link to="/about">Read about the platform</Link>
               </Button>
             </div>
-            <RegionStrip className="mt-9 justify-center" />
+            <RegionStrip regions={allRegions} className="mt-9 justify-center" />
           </div>
         </Reveal>
       </section>

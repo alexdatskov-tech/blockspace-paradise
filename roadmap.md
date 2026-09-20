@@ -34,3 +34,24 @@
 - [ ] Confirm the uptime figures on the status page against real monitoring
       before presenting them as measured
 - [ ] Add real customer reviews once there are customers to quote
+
+## Pricing model
+
+Retail prices are derived from the supplier's monthly EUR cost (`costEur` on
+each plan) rather than typed in, so a rate-card change means editing one number
+per plan. Three constants in `src/lib/plans.ts` control the rest:
+
+- `EUR_TO_USD` — conversion rate. **Update this when the rate moves**; it is a
+  hardcoded snapshot, not a live feed.
+- `MARKUP` — gross margin over cost, applied to the *yearly* rate (1.35 = 35%).
+- `MONTHLY_PREMIUM` — what paying monthly costs over the yearly rate (1.30),
+  which is where the advertised annual saving comes from.
+
+The yearly rate is the floor on purpose. Deriving it by discounting a marked-up
+monthly price sells below cost as soon as the discount exceeds the margin — at
+35% markup less a 30% discount, every annual order loses money. `marginPct()`
+reports the margin on either cycle.
+
+We advertise and bill **0% VAT** (`VAT_RATE`). The supplier quotes VAT-exclusive
+prices, so that tax comes out of `MARKUP` — worth re-checking against real
+invoices before launch.

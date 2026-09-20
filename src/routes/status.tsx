@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FlagIcon } from "@/components/FlagIcon";
 import { Reveal } from "@/components/Reveal";
 import { Wallpaper } from "@/components/Wallpaper";
-import { regions } from "@/lib/plans";
+import { allRegions } from "@/lib/plans";
 
 export const Route = createFileRoute("/status")({
   head: () => ({
@@ -125,7 +125,7 @@ function StatusPage() {
           <div className="panel p-5">
             <h2 className="text-sm font-semibold">Regions</h2>
             <div className="mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
-              {regions.map((region) => (
+              {allRegions.map((region) => (
                 <div
                   key={region.code}
                   className="flex items-center gap-2.5 rounded-lg border border-border bg-[oklch(0.2_0.014_168_/_45%)] p-3"

@@ -31,8 +31,10 @@ import {
   formatUsd,
   isSshPromo,
   platformFor,
-  regions,
+  regionByCode,
+  regionsFor,
   standardPlans,
+  tierRegions,
   type RegionCode,
 } from "@/lib/plans";
 
@@ -65,7 +67,7 @@ function CheckoutPage() {
 
   const [cycle, setCycle] = useState<Cycle>(initialCycle);
   const [selectedSlug, setSelectedSlug] = useState(findPlan(planSlug)?.slug ?? "iron");
-  const [region, setRegion] = useState<RegionCode>("NL");
+  const [pickedRegion, setPickedRegion] = useState<RegionCode>("NL");
 
   const [serverName, setServerName] = useState("");
   const [username, setUsername] = useState("root");
@@ -81,6 +83,12 @@ function CheckoutPage() {
   const plan = findPlan(selectedSlug) ?? standardPlans[1]!;
   const promoValid = isSshPromo(promo);
 
+  // The two ranges live in different datacentres, so switching range can strand
+  // the selection on a region the new plan does not offer. Fall back to that
+  // range's first region rather than rendering an impossible order.
+  const available = tierRegions[plan.tier];
+  const region: RegionCode = available.includes(pickedRegion) ? pickedRegion : available[0]!;
+
   const totals = useMemo(() => {
     const months = cycle === "annual" ? 12 : 1;
     const base = cycle === "annual" ? plan.annualTotal : plan.monthlyOnMonthly;
@@ -89,7 +97,7 @@ function CheckoutPage() {
     return { base, ssh, months, total: base + ssh };
   }, [cycle, plan, wantsSsh, promoValid]);
 
-  const activeRegion = regions.find((r) => r.code === region);
+  const activeRegion = regionByCode(region);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -194,7 +202,7 @@ function CheckoutPage() {
 
             {/* Region */}
             <section>
-              <RegionPicker value={region} onChange={setRegion} />
+              <RegionPicker tier={plan.tier} value={region} onChange={setPickedRegion} />
             </section>
 
             {/* Credentials */}
@@ -407,7 +415,7 @@ function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Tax / VAT</span>
+                  <span>VAT & sales tax (0%)</span>
                   <span className="font-mono">{formatUsd(0)}</span>
                 </div>
               </div>
@@ -505,7 +513,7 @@ function OrderPlaced({
   sshIncluded: boolean;
   sshFree: boolean;
 }) {
-  const activeRegion = regions.find((r) => r.code === region);
+  const activeRegion = regionByCode(region);
 
   return (
     <main className="relative grid min-h-screen place-items-center px-4 pb-28 pt-10 text-foreground">

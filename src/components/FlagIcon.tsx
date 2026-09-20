@@ -51,6 +51,27 @@ export function FlagIcon({ code, className = "h-3.5 w-5" }: FlagIconProps) {
         </svg>
       );
 
+    case "GB":
+      return (
+        <svg viewBox="0 0 24 16" className={shared} role="img" aria-label="United Kingdom">
+          <rect width="24" height="16" fill="#012169" />
+          {/* Diagonal saltire: white ground, then the red cross of St Patrick. */}
+          <path d="M0 0 24 16M24 0 0 16" stroke="#fff" strokeWidth="3.2" />
+          <path d="M0 0 24 16M24 0 0 16" stroke="#c8102e" strokeWidth="1.6" />
+          {/* Upright cross of St George. */}
+          <path d="M12 0v16M0 8h24" stroke="#fff" strokeWidth="5.4" />
+          <path d="M12 0v16M0 8h24" stroke="#c8102e" strokeWidth="3.2" />
+        </svg>
+      );
+
+    case "ES":
+      return (
+        <svg viewBox="0 0 24 16" className={shared} role="img" aria-label="Spain">
+          <rect width="24" height="16" fill="#aa151b" />
+          <rect y="4" width="24" height="8" fill="#f1bf00" />
+        </svg>
+      );
+
     case "US":
       return (
         <svg viewBox="0 0 24 16" className={shared} role="img" aria-label="United States">

@@ -1,27 +1,33 @@
 import { useState } from "react";
 import { Check, Loader2, Wand2 } from "lucide-react";
 import { FlagIcon } from "@/components/FlagIcon";
-import { bestRegion, regions, type RegionCode } from "@/lib/plans";
+import type { PlanTier, RegionCode } from "@/lib/plans";
+import { bestRegionFor, regionsFor } from "@/lib/plans";
 
 interface RegionPickerProps {
+  /** Which range's regions to offer — the two ranges sit in different DCs. */
+  tier: PlanTier;
   value: RegionCode;
   onChange: (code: RegionCode) => void;
 }
 
 /**
- * Region selector. Every region is the same price, so the only thing to weigh
- * is distance — "auto-select" just takes the lowest round-trip time.
+ * Region selector. Every region within a range is the same price, so the only
+ * thing to weigh is distance — "auto-select" just takes the lowest round-trip
+ * time on offer.
  */
-export function RegionPicker({ value, onChange }: RegionPickerProps) {
+export function RegionPicker({ tier, value, onChange }: RegionPickerProps) {
   const [probing, setProbing] = useState(false);
   const [autoPicked, setAutoPicked] = useState<RegionCode | null>(null);
+
+  const regions = regionsFor(tier);
 
   const autoSelect = () => {
     setProbing(true);
     setAutoPicked(null);
     // Brief pause so the button reads as doing something before it resolves.
     window.setTimeout(() => {
-      const pick = bestRegion();
+      const pick = bestRegionFor(tier);
       onChange(pick.code);
       setAutoPicked(pick.code);
       setProbing(false);
@@ -90,8 +96,8 @@ export function RegionPicker({ value, onChange }: RegionPickerProps) {
 
       {autoPicked && (
         <p role="status" className="mt-2 text-xs text-primary">
-          Picked {regions.find((r) => r.code === autoPicked)?.city} — lowest round-trip time from
-          your connection.
+          Picked {regions.find((r) => r.code === autoPicked)?.city} — lowest round-trip time of the
+          regions this plan offers.
         </p>
       )}
     </div>

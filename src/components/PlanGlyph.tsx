@@ -17,6 +17,12 @@ interface BlockPalette {
  * adding a tier means adding a palette rather than another SVG by hand.
  */
 const palettes: Record<string, BlockPalette> = {
+  stone: {
+    top: ["#8a8a8a", "#9d9d9d"],
+    left: ["#767676", "#828282"],
+    right: ["#5f5f5f", "#6b6b6b"],
+    specks: ["#b4b4b4", "#4e4e4e"],
+  },
   copper: {
     top: ["#c06d50", "#d97d5d"],
     left: ["#b05d40", "#bd6746"],
