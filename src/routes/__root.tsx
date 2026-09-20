@@ -81,13 +81,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Fast Minecraft server hosting with instant setup, NVMe storage, and 10 Gbps connectivity.",
+          "Minecraft server hosting on NVMe nodes with a 1 Gbps+ network, five regions, and root SSH access.",
       },
       { property: "og:title", content: "BlockForge" },
       {
         property: "og:description",
         content:
-          "Fast Minecraft server hosting with instant setup, NVMe storage, and 10 Gbps connectivity.",
+          "Minecraft server hosting on NVMe nodes with a 1 Gbps+ network, five regions, and root SSH access.",
       },
       { name: "author", content: "BlockForge" },
       { property: "og:type", content: "website" },
@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
     ],
   }),
