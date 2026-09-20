@@ -74,15 +74,16 @@ const stack = [
   {
     icon: Cpu,
     label: "Compute",
-    value: "Dedicated and fair-shared cores",
+    value: "AMD EPYC 7000 & 9000 series",
     detail:
-      "Nodes are capacity-planned rather than packed, so a neighbour's chunk-gen run doesn't eat your tick budget.",
+      "The standard range runs on EPYC 7000-series nodes; the premium range on 4th Gen EPYC 9000-series cores. Nodes are capacity-planned rather than packed, so a neighbour's chunk-gen run doesn't eat your tick budget. The exact model within a series varies by node.",
   },
   {
     icon: Database,
     label: "Memory",
-    value: "DDR4 and DDR5",
-    detail: "The premium range runs DDR5 throughout; the standard range runs registered DDR4 ECC.",
+    value: "DDR4 ECC and DDR5 ECC",
+    detail:
+      "The premium range runs DDR5 ECC throughout; the standard range runs registered DDR4 ECC.",
   },
   {
     icon: HardDrive,

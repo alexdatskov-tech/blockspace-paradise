@@ -27,6 +27,26 @@ export const regions: Region[] = [
 
 export type PlanTier = "standard" | "premium";
 
+/**
+ * Platform description per range.
+ *
+ * The exact CPU model is deliberately not advertised: a virtual server is not
+ * pinned to one SKU, so the honest claim is the processor series and memory
+ * generation the range runs on.
+ */
+export const platforms: Record<PlanTier, { cpu: string; memory: string; note: string }> = {
+  standard: {
+    cpu: "AMD EPYC 7000 series",
+    memory: "DDR4 ECC",
+    note: "Shared vCPU on AMD EPYC 7000-series nodes with registered ECC DDR4 and NVMe storage.",
+  },
+  premium: {
+    cpu: "AMD EPYC 9000 series",
+    memory: "DDR5 ECC",
+    note: "4th Gen AMD EPYC 9000-series cores with DDR5 ECC memory and enterprise NVMe arrays.",
+  },
+};
+
 export interface Plan {
   /** URL-safe id used by the checkout route. */
   slug: string;
@@ -268,4 +288,9 @@ export function formatUsd(value: number): string {
 /** Lowest-latency region, used by the "auto-select" control. */
 export function bestRegion(): Region {
   return regions.reduce((best, region) => (region.latencyMs < best.latencyMs ? region : best));
+}
+
+/** Platform (CPU + memory) a plan runs on. */
+export function platformFor(plan: Plan) {
+  return platforms[plan.tier];
 }

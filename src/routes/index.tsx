@@ -23,11 +23,14 @@ import { LiveServerCard } from "@/components/LiveServerCard";
 import { FlagIcon } from "@/components/FlagIcon";
 import { Reveal } from "@/components/Reveal";
 import { Wallpaper } from "@/components/Wallpaper";
+import { PrototypeNotice } from "@/components/PrototypeNotice";
 import { VerticalTicker } from "@/components/VerticalTicker";
 import {
   PROVISION_TIME,
   SSH_ADDON_PRICE,
   formatUsd,
+  platformFor,
+  platforms,
   premiumPlans,
   regions,
   standardPlans,
@@ -37,8 +40,8 @@ import {
 const features = [
   {
     icon: Cpu,
-    title: "Dedicated cores, not oversold ones",
-    text: "We cap how many instances share a node, so your tick loop keeps its CPU time when the server next door starts a chunk-gen run.",
+    title: "AMD EPYC nodes, not oversold ones",
+    text: "The standard range runs on EPYC 7000-series nodes, the premium range on 4th Gen EPYC 9000-series with DDR5. We cap how many instances share a node so your tick loop keeps its CPU time.",
   },
   {
     icon: HardDrive,
@@ -313,6 +316,16 @@ function PlanCard({ plan, annual }: { plan: Plan; annual: boolean }) {
         <SpecCell icon={Network} label="Port" value={`${plan.portGbps} Gbps`} />
       </dl>
 
+      <div className="mt-4 rounded-lg border border-border bg-[oklch(0.16_0.014_168_/_45%)] px-3 py-2.5">
+        <p className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
+          <Cpu className="size-3 shrink-0 text-primary/80" />
+          {platformFor(plan).cpu}
+        </p>
+        <p className="mt-0.5 pl-4.5 font-mono text-[10.5px] text-muted-foreground">
+          {platformFor(plan).memory} · NVMe
+        </p>
+      </div>
+
       <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-3.5">
         <span className="label-tiny">Regions</span>
         <span className="flex items-center gap-1.5">
@@ -371,6 +384,7 @@ function HomePage() {
     <main className="relative min-h-screen text-foreground">
       <Wallpaper />
       <Header />
+      <PrototypeNotice />
 
       {/* ------------------------------ Hero ------------------------------ */}
       <section className="px-4 pb-14 pt-28 sm:pt-32 md:pb-20 md:pt-36">
@@ -384,15 +398,15 @@ function HomePage() {
               All systems operational
             </Link>
 
-            <h1 className="mt-6 text-balance font-display text-[2.75rem] font-bold leading-[1.02] sm:text-[3.5rem] lg:text-[4rem]">
+            <h1 className="mt-6 text-balance font-display text-[2.75rem] font-bold leading-[1.02] drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:text-[3.5rem] lg:text-[4rem]">
               Your world.
               <br />
               <span className="text-primary">Unchained.</span>
             </h1>
 
-            <p className="mt-5 max-w-lg text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base">
-              Minecraft servers on NVMe nodes with a 1&nbsp;Gbps+ network, five regions at one
-              price, and an optional root shell. Live in {PROVISION_TIME}.
+            <p className="mt-5 max-w-lg text-pretty text-[0.9375rem] leading-relaxed text-foreground/85 drop-shadow-[0_1px_10px_rgba(0,0,0,0.6)] sm:text-base">
+              Minecraft servers on AMD&nbsp;EPYC nodes with NVMe storage, a 1&nbsp;Gbps+ network,
+              five regions at one price, and an optional root shell. Live in {PROVISION_TIME}.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -407,14 +421,17 @@ function HomePage() {
               </Button>
             </div>
 
-            <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-muted-foreground">
+            <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2">
               {[
                 `Live in ${PROVISION_TIME}`,
                 "1 Gbps+ on every node",
                 `Root SSH from ${formatUsd(SSH_ADDON_PRICE)}/mo`,
               ].map((item) => (
-                <li key={item} className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-primary" />
+                <li
+                  key={item}
+                  className="flex items-center gap-1.5 rounded-full border border-border bg-[oklch(0.15_0.014_168_/_62%)] px-2.5 py-1 text-[11px] font-medium text-foreground/90 backdrop-blur-md"
+                >
+                  <Check className="size-3 text-primary" />
                   {item}
                 </li>
               ))}
@@ -530,8 +547,33 @@ function HomePage() {
             </div>
           </Reveal>
 
+          {/* Platform banner: what this range actually runs on */}
+          <Reveal className="mt-7">
+            <div className="panel flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg border border-primary/25 bg-primary/10 text-primary">
+                  <Cpu className="size-4" />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {platforms[tier].cpu}
+                    <span className="ml-2 font-mono text-[11px] font-normal text-muted-foreground">
+                      {platforms[tier].memory}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+                    {platforms[tier].note}
+                  </p>
+                </div>
+              </div>
+              <p className="shrink-0 text-[11px] text-muted-foreground sm:max-w-45 sm:text-right">
+                The exact model within the series varies by node.
+              </p>
+            </div>
+          </Reveal>
+
           <div
-            className={`mt-8 grid gap-4 sm:grid-cols-2 ${
+            className={`mt-4 grid gap-4 sm:grid-cols-2 ${
               tier === "premium" ? "lg:grid-cols-3" : "lg:grid-cols-4"
             }`}
           >
@@ -692,7 +734,7 @@ function HomePage() {
       </section>
 
       {/* ------------------------------ Footer ---------------------------- */}
-      <footer className="px-4 pb-8">
+      <footer className="px-4 pb-24">
         <div className="panel mx-auto flex max-w-6xl flex-col items-center gap-4 px-5 py-5 sm:flex-row sm:justify-between">
           <Brand />
           <nav className="flex flex-wrap justify-center gap-5 text-xs text-muted-foreground">

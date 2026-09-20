@@ -21,16 +21,18 @@ import { Label } from "@/components/ui/label";
 import { FlagIcon } from "@/components/FlagIcon";
 import { RegionPicker } from "@/components/RegionPicker";
 import { Wallpaper } from "@/components/Wallpaper";
+import { PrototypeNotice } from "@/components/PrototypeNotice";
 import { PlanGlyph } from "@/components/PlanGlyph";
 import {
   PROVISION_TIME,
   SSH_ADDON_PRICE,
   allPlans,
   findPlan,
-  standardPlans,
   formatUsd,
   isSshPromo,
+  platformFor,
   regions,
+  standardPlans,
   type RegionCode,
 } from "@/lib/plans";
 
@@ -126,8 +128,9 @@ function CheckoutPage() {
   }
 
   return (
-    <main className="relative min-h-screen px-4 py-6 text-foreground">
+    <main className="relative min-h-screen px-4 pb-28 pt-6 text-foreground">
       <Wallpaper veil={0.46} />
+      <PrototypeNotice />
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center justify-between">
           <Link
@@ -338,7 +341,17 @@ function CheckoutPage() {
 
               <dl className="mt-4 space-y-2 text-xs">
                 <SummaryRow icon={Cpu} label="vCPU" value={`${plan.vcpu}`} />
-                <SummaryRow icon={Database} label="RAM" value={`${plan.ramGb} GB`} />
+
+                <SummaryRow
+                  icon={Server}
+                  label="Platform"
+                  value={platformFor(plan).cpu.replace("AMD EPYC ", "EPYC ")}
+                />
+                <SummaryRow
+                  icon={Database}
+                  label="RAM"
+                  value={`${plan.ramGb} GB ${platformFor(plan).memory.replace(" ECC", "")}`}
+                />
                 <SummaryRow icon={HardDrive} label="Storage" value={`${plan.storageGb} GB NVMe`} />
                 <SummaryRow
                   icon={Network}
@@ -495,7 +508,7 @@ function OrderPlaced({
   const activeRegion = regions.find((r) => r.code === region);
 
   return (
-    <main className="relative grid min-h-screen place-items-center px-4 py-10 text-foreground">
+    <main className="relative grid min-h-screen place-items-center px-4 pb-28 pt-10 text-foreground">
       <Wallpaper veil={0.46} />
       <div className="panel-strong edge-light w-full max-w-lg p-6 sm:p-8">
         <span className="grid size-11 place-items-center rounded-md border border-primary/40 bg-primary/10 text-primary">

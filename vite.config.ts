@@ -6,7 +6,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// GitHub Pages serves a project site from /<repo>/, so assets and router links
+// need that prefix. The Pages workflow sets PAGES_BASE; everywhere else the app
+// is served from the domain root and this stays "/".
+const base = process.env["PAGES_BASE"] || "/";
+
 export default defineConfig({
+  vite: {
+    base,
+  },
   nitro: {
     preset: "node-server",
   },

@@ -1,0 +1,78 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets the site be redeployed from the Actions tab without a new commit.
+  workflow_dispatch:
+
+# Read the repo, mint the OIDC token Pages deployment needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time. In-progress runs finish rather than being cancelled,
+# so a half-uploaded artifact never becomes the live site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint src
+
+      - name: Build
+        # A project site is served from https://<user>.github.io/<repo>/, so the
+        # bundle and the router both need that prefix. configure-pages resolves
+        # it for us, including the root path a custom domain would give.
+        env:
+          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+        run: npm run build
+
+      - name: Verify the static output
+        run: |
+          set -euo pipefail
+          for page in index.html 404.html about/index.html checkout/index.html \
+                      login/index.html status/index.html; do
+            test -s "dist/$page" || { echo "missing or empty: dist/$page"; exit 1; }
+          done
+          test -f dist/.nojekyll || { echo "missing dist/.nojekyll"; exit 1; }
+          echo "Static output looks complete."
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
