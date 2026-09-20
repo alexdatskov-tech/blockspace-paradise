@@ -117,8 +117,12 @@ export const MONTHLY_PREMIUM = 1.3;
 export const ANNUAL_DISCOUNT_PCT = Math.round((1 - 1 / MONTHLY_PREMIUM) * 100);
 
 /**
- * We advertise and charge 0% VAT — the price shown is the price billed. The
- * supplier's VAT is absorbed into MARKUP rather than added at checkout.
+ * 0% VAT on both sides of the deal: we procure at 0% VAT in every region and
+ * bill customers at 0% VAT in every region. No Dutch, Finnish or other
+ * regional VAT is added at either end.
+ *
+ * That makes `costPerMonth` the true landed cost, so the margins reported by
+ * `marginPct` are what actually reaches the business.
  */
 export const VAT_RATE = 0;
 

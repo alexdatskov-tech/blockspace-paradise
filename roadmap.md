@@ -50,9 +50,10 @@ monthly price sells below cost as soon as the discount exceeds the margin — at
 35% markup less a 30% discount, every annual order loses money. `marginPct()`
 reports the margin on either cycle.
 
-We advertise and bill **0% VAT** (`VAT_RATE`). The supplier quotes VAT-exclusive
-prices, so that tax comes out of `MARKUP` — worth re-checking against real
-invoices before launch.
+0% VAT on both sides: we procure at 0% VAT (selectable on the supplier side for
+any region) and bill customers at 0% VAT. Nothing is added at either end, so
+`costPerMonth` is the true landed cost and the margins `marginPct` reports are
+what actually reaches the business.
 
 ## Provenance of the catalogue
 
