@@ -9,7 +9,7 @@
   --radius-md: calc(var(--radius) - 1px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 10px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -35,228 +35,288 @@
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
   --color-success: var(--success);
-  --font-sans: "Manrope", sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Manrope", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.115 0.016 155);
-  --foreground: oklch(0.97 0.012 145);
-  --card: oklch(0.18 0.023 155 / 78%);
-  --card-foreground: oklch(0.97 0.012 145);
-  --popover: oklch(0.16 0.023 155);
-  --popover-foreground: oklch(0.97 0.012 145);
-  --primary: oklch(0.78 0.2 145);
-  --primary-foreground: oklch(0.11 0.025 150);
-  --secondary: oklch(0.25 0.032 155);
-  --secondary-foreground: oklch(0.94 0.015 145);
-  --muted: oklch(0.21 0.02 155);
-  --muted-foreground: oklch(0.72 0.025 145);
-  --accent: oklch(0.78 0.2 145 / 15%);
-  --accent-foreground: oklch(0.86 0.17 145);
-  --destructive: oklch(0.63 0.24 28);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.95 0.02 145 / 13%);
-  --input: oklch(0.95 0.02 145 / 16%);
-  --ring: oklch(0.78 0.2 145);
-  --glass: oklch(0.14 0.02 155 / 58%);
-  --glass-strong: oklch(0.17 0.025 155 / 88%);
-  --surface: oklch(0.15 0.017 155);
-  --gold: oklch(0.82 0.14 82);
-  --gold-foreground: oklch(0.16 0.03 82);
-  --success: oklch(0.78 0.2 145);
+  --radius: 0.625rem;
+
+  /* Neutral, slightly cool base so the green reads as an accent, not the theme. */
+  --background: oklch(0.128 0.012 168);
+  --foreground: oklch(0.975 0.006 150);
+
+  /* Panels are translucent by design: the wallpaper stays visible behind them. */
+  --card: oklch(0.175 0.015 168 / 62%);
+  --card-foreground: oklch(0.975 0.006 150);
+  --popover: oklch(0.155 0.016 168 / 96%);
+  --popover-foreground: oklch(0.975 0.006 150);
+
+  --primary: oklch(0.8 0.168 154);
+  --primary-foreground: oklch(0.16 0.03 160);
+  --secondary: oklch(0.29 0.014 168 / 55%);
+  --secondary-foreground: oklch(0.95 0.008 150);
+  --muted: oklch(0.24 0.012 168 / 60%);
+  --muted-foreground: oklch(0.78 0.012 160);
+  --accent: oklch(0.8 0.168 154 / 14%);
+  --accent-foreground: oklch(0.88 0.15 154);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+
+  /* Hairlines rather than heavy 1px strokes. */
+  --border: oklch(1 0 0 / 11%);
+  --border-strong: oklch(1 0 0 / 18%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.8 0.168 154 / 55%);
+
+  --glass: oklch(0.155 0.014 168 / 55%);
+  --glass-strong: oklch(0.155 0.016 168 / 80%);
+  --surface: oklch(0.185 0.014 168 / 70%);
+  --gold: oklch(0.83 0.13 84);
+  --gold-foreground: oklch(0.18 0.03 84);
+  --success: oklch(0.8 0.168 154);
+
+  /* Elevation: soft and wide, never a neon halo. */
+  --elev-1: 0 1px 2px oklch(0 0 0 / 26%), 0 6px 18px oklch(0 0 0 / 18%);
+  --elev-2: 0 1px 2px oklch(0 0 0 / 30%), 0 14px 38px oklch(0 0 0 / 26%);
+  --elev-3: 0 2px 4px oklch(0 0 0 / 32%), 0 28px 70px oklch(0 0 0 / 36%);
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
+/* ---------------------------------------------------------------- *
+ * Motion
+ * ---------------------------------------------------------------- */
 
-@keyframes float-smooth {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes float-shadow {
-  0%,
-  100% {
-    transform: scale(0.95);
-    opacity: 0.35;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.6;
-  }
-}
-
-@keyframes extreme-pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 16px rgba(52, 211, 153, 0.35), inset 0 0 8px rgba(52, 211, 153, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 32px rgba(52, 211, 153, 0.65), 0 0 45px rgba(16, 185, 129, 0.2), inset 0 0 14px rgba(52, 211, 153, 0.3);
-  }
-}
-
-@keyframes ticker-slide {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(-18px);
-  }
-}
-
-@keyframes marquee {
+@keyframes rise-soft {
   from {
-    transform: translateX(0);
+    opacity: 0;
+    transform: translateY(16px);
   }
   to {
-    transform: translateX(-50%);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes pulse-dot {
   0%,
   100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 40%, transparent);
   }
-  50% {
-    opacity: 0.82;
-    box-shadow: 0 0 0 7px transparent;
+  60% {
+    box-shadow: 0 0 0 6px transparent;
   }
 }
 
 @keyframes slow-pan {
   0% {
-    transform: scale(1.03) translate3d(0, 0, 0);
+    transform: scale(1.04) translate3d(0, 0, 0);
   }
   50% {
-    transform: scale(1.09) translate3d(-1.2%, -0.7%, 0);
+    transform: scale(1.09) translate3d(-1%, -0.6%, 0);
   }
   100% {
-    transform: scale(1.03) translate3d(0, 0, 0);
+    transform: scale(1.04) translate3d(0, 0, 0);
   }
 }
 
-@keyframes rise-soft {
+@keyframes sheen {
   from {
-    opacity: 0;
-    transform: translateY(22px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  from {
-    transform: translateX(-120%);
+    transform: translateX(-130%);
   }
   to {
     transform: translateX(160%);
   }
 }
 
+/* ---------------------------------------------------------------- *
+ * Surfaces
+ *
+ * Everything the user reads sits on a translucent panel so the
+ * wallpaper behind it stays visible the whole way down the page.
+ * ---------------------------------------------------------------- */
+
+@utility panel {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-1);
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+}
+
+@utility panel-strong {
+  background: var(--glass-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--elev-2);
+  backdrop-filter: blur(26px) saturate(130%);
+  -webkit-backdrop-filter: blur(26px) saturate(130%);
+}
+
+/* Legacy aliases kept so existing shadcn primitives keep their styling. */
 @utility glass-panel {
   background: var(--glass);
   border: 1px solid var(--border);
-  box-shadow: 0 24px 70px oklch(0 0 0 / 28%);
-  backdrop-filter: blur(22px);
+  box-shadow: var(--elev-1);
+  backdrop-filter: blur(18px) saturate(125%);
 }
 
 @utility glass-panel-strong {
   background: var(--glass-strong);
   border: 1px solid var(--border);
-  box-shadow: 0 24px 70px oklch(0 0 0 / 34%);
-  backdrop-filter: blur(26px);
+  box-shadow: var(--elev-2);
+  backdrop-filter: blur(26px) saturate(130%);
+}
+
+/* A single hairline that reads crisply on top of the wallpaper. */
+@utility hairline {
+  border-color: var(--border);
+}
+
+@utility hairline-strong {
+  border-color: var(--border-strong);
+}
+
+/* Top-edge highlight: gives a panel a physical edge without a glow. */
+@utility edge-light {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline: 1.25rem;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--foreground) 22%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 @utility text-balance {
   text-wrap: balance;
 }
-@utility animate-float-smooth {
-  animation: float-smooth 5.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-}
-@utility animate-float-shadow {
-  animation: float-shadow 5.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-}
-@utility animate-ticker-slide {
-  animation: ticker-slide 6s ease-in-out infinite;
-}
-@utility extreme-glow-btn {
-  animation: extreme-pulse-glow 3s ease-in-out infinite;
-  border-radius: 9999px;
-  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-@utility animate-float {
-  animation: float 5s ease-in-out infinite;
-}
-@utility animate-marquee {
-  animation: marquee 34s linear infinite;
-}
-@utility animate-status {
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-@utility animate-slow-pan {
-  animation: slow-pan 24s ease-in-out infinite;
-}
-@utility animate-rise-soft {
-  animation: rise-soft 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@utility animate-shimmer {
-  animation: shimmer 2.8s ease-in-out infinite;
+
+@utility text-pretty {
+  text-wrap: pretty;
 }
 
-@utility smooth-lift {
+/* Small uppercase label used sparingly for spec keys. */
+@utility label-tiny {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+
+@utility animate-rise-soft {
+  animation: rise-soft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-status {
+  animation: pulse-dot 2.4s ease-out infinite;
+}
+
+@utility animate-slow-pan {
+  animation: slow-pan 28s ease-in-out infinite;
+}
+
+@utility animate-sheen {
+  animation: sheen 2.6s ease-in-out infinite;
+}
+
+/* Scroll reveal, driven by the Reveal component. */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(18px);
   transition:
-    transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 600ms ease,
-    background-color 600ms ease,
-    box-shadow 600ms ease;
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@utility lift {
+  transition:
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 420ms ease,
+    background-color 420ms ease,
+    box-shadow 420ms ease;
   &:hover {
-    transform: translateY(-7px);
+    transform: translateY(-3px);
+    box-shadow: var(--elev-2);
   }
 }
 
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
+
   html {
     scroll-behavior: smooth;
+    /* Sticky headers shouldn't cover the anchor target. */
+    scroll-padding-top: 6rem;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
   body {
     margin: 0;
     min-width: 320px;
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
     overflow-x: hidden;
   }
+
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: 0;
+    letter-spacing: -0.02em;
   }
+
+  h1 {
+    letter-spacing: -0.035em;
+  }
+
   ::selection {
-    background: color-mix(in oklab, var(--primary) 32%, transparent);
+    background: color-mix(in oklab, var(--primary) 30%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Keyboard focus stays obvious without decorating mouse clicks. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(1 0 0 / 12%);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(1 0 0 / 20%);
+    background-clip: content-box;
   }
 }
 
@@ -264,15 +324,18 @@
   html {
     scroll-behavior: auto;
   }
-  .animate-float,
-  .animate-marquee,
   .animate-status,
   .animate-slow-pan,
   .animate-rise-soft,
-  .animate-shimmer {
+  .animate-sheen {
     animation: none;
   }
-  .smooth-lift {
+  .reveal {
+    opacity: 1;
+    transform: none;
     transition: none;
+  }
+  .lift:hover {
+    transform: none;
   }
 }
