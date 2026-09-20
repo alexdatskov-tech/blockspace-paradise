@@ -1,0 +1,101 @@
+BlockForge — Proprietary Software License
+Copyright (c) 2026 alexdatskov-tech. All rights reserved.
+
+================================================================================
+1. OWNERSHIP
+================================================================================
+
+This repository and everything in it — source code, designs, page copy,
+artwork, pricing data and configuration (collectively, the "Software") — is the
+exclusive property of the copyright holder ("the Owner"). It is proprietary and
+confidential. No ownership or licence is transferred to anyone by the Software
+being publicly readable.
+
+================================================================================
+2. NO LICENCE IS GRANTED
+================================================================================
+
+No permission is granted to any person to use, copy, modify, merge, publish,
+distribute, sublicense, sell, host, deploy, or create derivative works from the
+Software, in whole or in part, by any means.
+
+Specifically, and without limiting the above, you MAY NOT:
+
+  a) copy or reproduce the Software or any part of it;
+  b) redistribute it, publicly or privately, in source or compiled form;
+  c) host, deploy or operate it, whether commercially or not;
+  d) modify it or build derivative or competing works from it;
+  e) reuse its design, layout, page copy or artwork in another project;
+  f) remove, obscure or alter this licence or any copyright notice;
+  g) use it to train, fine-tune or evaluate a machine-learning model.
+
+Reading the Software, and any use expressly required by Section 4, are the only
+things permitted without prior written consent.
+
+================================================================================
+3. PERMISSION BY WRITTEN CONSENT ONLY
+================================================================================
+
+Any use described in Section 2 requires the Owner's prior express written
+consent, obtained by submitting the permission request form in
+LICENSE-REQUEST.md and receiving written approval.
+
+Consent is valid only if it is:
+  - in writing and signed or sent from an account the Owner controls;
+  - specific as to who may use the Software, for what purpose, and for how long.
+
+Consent is not granted by silence, by the absence of a reply, by continued
+public availability of this repository, or by any verbal statement. Any consent
+given is non-transferable and non-exclusive, applies only to the scope stated
+in it, and may be revoked in writing at any time.
+
+================================================================================
+4. GITHUB PLATFORM RIGHTS (IMPORTANT)
+================================================================================
+
+This repository is public on GitHub. Under the GitHub Terms of Service, making
+a repository public grants every GitHub user a limited right to view it and to
+fork it within GitHub. That platform right exists regardless of this licence
+and CANNOT be revoked by this document.
+
+This licence therefore restricts everything the GitHub Terms of Service do not
+compel: use outside GitHub, redistribution, deployment, modification for any
+purpose other than viewing, and all commercial use.
+
+If the Owner wishes to prevent forking altogether, the repository must be made
+private. No licence text can achieve that on a public repository.
+
+================================================================================
+5. THIRD-PARTY COMPONENTS
+================================================================================
+
+The Software depends on third-party open-source packages that are NOT covered
+by this licence. Each remains governed by its own licence, and nothing here
+restricts any right you have under those licences. Third-party names and marks
+referenced in the Software (including Pterodactyl, PaperMC, Mojang and
+Microsoft) belong to their respective owners; this project is independent and
+not endorsed by any of them.
+
+================================================================================
+6. ENFORCEMENT
+================================================================================
+
+Unauthorised use is copyright infringement and may also breach other law. The
+Owner reserves every legal and equitable remedy, including injunctive relief.
+Any unauthorised use terminates all permissions under this licence
+automatically and immediately, without notice.
+
+================================================================================
+7. NO WARRANTY
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+OWNER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM OR IN CONNECTION WITH THE SOFTWARE
+OR ITS USE.
+
+================================================================================
+
+Permission requests: see LICENSE-REQUEST.md
