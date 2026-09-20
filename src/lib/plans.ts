@@ -163,10 +163,28 @@ export interface Plan {
 type PlanSpec = Omit<
   Plan,
   "monthlyOnAnnual" | "monthlyOnMonthly" | "annualTotal" | "annualDiscountPct" | "portGbps"
-> & { portGbps?: number };
+> & {
+  portGbps?: number;
+  /**
+   * Deliberate price point for the yearly rate, overriding `MARKUP`. Use it to
+   * sharpen a plan that has to win on price; everything else still derives
+   * from cost. Must stay above `costPerMonth` — buildPlan throws otherwise.
+   */
+  priceOnAnnual?: number;
+};
 
 function buildPlan(spec: PlanSpec): Plan {
-  const onAnnual = round2(spec.costPerMonth * MARKUP);
+  const onAnnual = round2(spec.priceOnAnnual ?? spec.costPerMonth * MARKUP);
+
+  // A price override is hand-set, so guard it: shipping a plan that sells
+  // below what we pay for it is the one pricing mistake worth crashing over.
+  if (onAnnual <= spec.costPerMonth) {
+    throw new Error(
+      `Plan "${spec.slug}" prices at $${onAnnual}/mo against a cost of ` +
+        `$${spec.costPerMonth}/mo — that loses money on every order.`,
+    );
+  }
+
   const monthly = round2(onAnnual * MONTHLY_PREMIUM);
 
   return {
@@ -231,9 +249,14 @@ export const midPlans: Plan[] = [
     storageGb: 240,
     trafficTb: 3,
     costPerMonth: 22.51,
+    // Priced under the usual markup on purpose. Diamond is the cheapest route
+    // to 32 GB, and at the standard 1.35 it sat close enough to Void that the
+    // DDR5 plan looked like the obvious buy. ~20% still clears cost well.
+    priceOnAnnual: 27.99,
     players: "75–150 players",
     tagline: "Heavy modpacks and multi-world SMP",
     stock: 2,
+    badge: "Best value",
   }),
 ];
 
