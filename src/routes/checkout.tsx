@@ -33,7 +33,7 @@ import {
   platformFor,
   regionByCode,
   regionsFor,
-  standardPlans,
+  midPlans,
   tierRegions,
   type RegionCode,
 } from "@/lib/plans";
@@ -80,7 +80,7 @@ function CheckoutPage() {
   const [placed, setPlaced] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
-  const plan = findPlan(selectedSlug) ?? standardPlans[1]!;
+  const plan = findPlan(selectedSlug) ?? midPlans[1]!;
   const promoValid = isSshPromo(promo);
 
   // The two ranges live in different datacentres, so switching range can strand

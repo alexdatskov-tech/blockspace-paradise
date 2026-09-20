@@ -17,18 +17,6 @@ interface BlockPalette {
  * adding a tier means adding a palette rather than another SVG by hand.
  */
 const palettes: Record<string, BlockPalette> = {
-  stone: {
-    top: ["#8a8a8a", "#9d9d9d"],
-    left: ["#767676", "#828282"],
-    right: ["#5f5f5f", "#6b6b6b"],
-    specks: ["#b4b4b4", "#4e4e4e"],
-  },
-  copper: {
-    top: ["#c06d50", "#d97d5d"],
-    left: ["#b05d40", "#bd6746"],
-    right: ["#8f462c", "#9c4f33"],
-    specks: ["#e59273", "#7a3a22"],
-  },
   iron: {
     top: ["#dce0e5", "#f0f3f6"],
     left: ["#b8bdc5", "#c9ced6"],
@@ -58,18 +46,6 @@ const palettes: Record<string, BlockPalette> = {
     left: ["#552a7e", "#63318f"],
     right: ["#3d1e5c", "#48236c"],
     specks: ["#d089f7", "#2a1240"],
-  },
-  bedrockium: {
-    top: ["#5a5760", "#6e6a76"],
-    left: ["#474450", "#525060"],
-    right: ["#343139", "#3d3a43"],
-    specks: ["#8d889a", "#221f27"],
-  },
-  neutronium: {
-    top: ["#dfe3f2", "#f4f6ff"],
-    left: ["#b9bfd6", "#cbd0e4"],
-    right: ["#949bb6", "#a5abc4"],
-    specks: ["#ffffff", "#7b82a0"],
   },
   void: {
     top: ["#131019", "#1c1824"],

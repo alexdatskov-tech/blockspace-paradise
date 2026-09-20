@@ -2,6 +2,19 @@
  * Single source of truth for the plan catalogue and deployment regions.
  * Both the pricing grid on the home page and the checkout flow read from here,
  * so a price only ever needs changing in one place.
+ *
+ * PROVENANCE — what is sourced and what is ours:
+ *
+ *   Sourced from the supplier's rate card (specs, cost, region codes):
+ *     vcpu, ramGb, storageGb, portGbps, trafficTb, costPerMonth, stock,
+ *     tierRegions. These mirror the v2 and v3 lines one-for-one.
+ *
+ *   Ours, invented for this storefront (no upstream source):
+ *     name, glyph, tagline, players. They are retail names for supplier SKUs.
+ *
+ *   Ours, and NOT measured: Region.latencyMs. These are rough estimates used
+ *     to order the region list and drive "auto-select". Replace them with real
+ *     probe data before presenting them to customers as fact.
  */
 
 export type RegionCode = "NL" | "FI" | "IT" | "US" | "PL" | "GB" | "ES";
@@ -10,7 +23,7 @@ export interface Region {
   code: RegionCode;
   country: string;
   city: string;
-  /** Indicative round-trip time from Western Europe, used by "auto-select". */
+  /** ESTIMATE, not measured. See the provenance note above. */
   latencyMs: number;
 }
 
@@ -24,16 +37,18 @@ const REGION_TABLE: Record<RegionCode, Region> = {
   US: { code: "US", country: "United States", city: "Ashburn, VA", latencyMs: 88 },
 };
 
-export type PlanTier = "standard" | "premium";
+export type PlanTier = "mid" | "high";
 
 /**
  * The two ranges sit on different platforms in different datacentres, so they
- * do not offer the same regions. Every region within a range costs the same —
- * there is no regional surcharge anywhere.
+ * do not offer the same regions. Every region within a range costs the same.
+ *
+ * The supplier lists further locations beyond these five per range; only the
+ * named ones are offered here.
  */
 export const tierRegions: Record<PlanTier, RegionCode[]> = {
-  standard: ["NL", "PL", "IT", "FI", "US"],
-  premium: ["NL", "GB", "ES", "IT", "FI"],
+  mid: ["NL", "FI", "IT", "US", "PL"],
+  high: ["NL", "FI", "GB", "ES", "IT"],
 };
 
 export function regionsFor(tier: PlanTier): Region[] {
@@ -55,37 +70,39 @@ export function regionByCode(code: RegionCode): Region {
  * generation the range runs on.
  */
 export const platforms: Record<PlanTier, { cpu: string; memory: string; note: string }> = {
-  standard: {
+  mid: {
     cpu: "AMD EPYC 7000 series",
     memory: "DDR4 ECC",
     note: "Shared vCPU on AMD EPYC 7000-series nodes with registered ECC DDR4 and NVMe storage.",
   },
-  premium: {
+  high: {
     cpu: "AMD EPYC 9000 series",
     memory: "DDR5 ECC",
     note: "4th Gen AMD EPYC 9000-series cores with DDR5 ECC memory and enterprise NVMe arrays.",
   },
 };
 
+export const tierLabels: Record<PlanTier, string> = {
+  mid: "Mid budget",
+  high: "High performance",
+};
+
 /* ------------------------------------------------------------------ *
  * Pricing
  *
- * Upstream quotes a monthly rate in EUR with VAT excluded. Retail price is
- * derived from that cost so there is exactly one number to update per plan
- * when the supplier's rate changes.
+ * `costPerMonth` is what the supplier charges us per month on their annual
+ * rate, in USD, exactly as it appears on their rate card. Retail is derived
+ * from it, so a rate change means editing one number per plan.
  * ------------------------------------------------------------------ */
 
-/** EUR -> USD. Update alongside the supplier's rate card. */
-export const EUR_TO_USD = 1.08;
-
 /**
- * Reseller margin over supplier cost, applied to the YEARLY rate. 1.35 = 35%
- * gross on our cheapest price.
+ * Reseller margin over supplier cost, applied to the YEARLY rate.
+ * 1.35 = 35% gross on our cheapest price.
  *
  * The yearly rate is the floor deliberately. Deriving it by discounting a
  * marked-up monthly price sells below cost as soon as the discount exceeds the
- * margin — a 35% markup less a 30% discount is 0.945x, i.e. a loss on every
- * annual order.
+ * margin — a 35% markup less a 30% discount is 0.945x, a loss on every annual
+ * order.
  */
 export const MARKUP = 1.35;
 
@@ -109,14 +126,10 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-/** Supplier monthly cost in EUR -> our per-month price on a yearly plan, USD. */
-function yearlyRateMonthly(costEur: number): number {
-  return round2(costEur * EUR_TO_USD * MARKUP);
-}
-
 export interface Plan {
   /** URL-safe id used by the checkout route. */
   slug: string;
+  /** Our retail name for the SKU. Not a supplier name. */
   name: string;
   /** Key into the block artwork in PlanGlyph. */
   glyph: string;
@@ -128,8 +141,8 @@ export interface Plan {
   portGbps: number;
   /** Included outbound traffic, in TB. */
   trafficTb: number;
-  /** Supplier cost per month, in EUR, VAT excluded. */
-  costEur: number;
+  /** Supplier cost per month on their annual rate, USD. */
+  costPerMonth: number;
   /** Price per month when billed annually. */
   monthlyOnAnnual: number;
   /** Full price per month when billed month to month. */
@@ -146,14 +159,14 @@ export interface Plan {
   badge?: string;
 }
 
-/** Everything about a plan except the prices derived from `costEur`. */
+/** Everything about a plan except the prices derived from `costPerMonth`. */
 type PlanSpec = Omit<
   Plan,
   "monthlyOnAnnual" | "monthlyOnMonthly" | "annualTotal" | "annualDiscountPct" | "portGbps"
 > & { portGbps?: number };
 
 function buildPlan(spec: PlanSpec): Plan {
-  const onAnnual = yearlyRateMonthly(spec.costEur);
+  const onAnnual = round2(spec.costPerMonth * MARKUP);
   const monthly = round2(onAnnual * MONTHLY_PREMIUM);
 
   return {
@@ -169,54 +182,25 @@ function buildPlan(spec: PlanSpec): Plan {
 
 /** Gross margin on a plan at a given billing cycle, as a percentage. */
 export function marginPct(plan: Plan, cycle: "monthly" | "annual"): number {
-  const cost = plan.costEur * EUR_TO_USD;
   const price = cycle === "annual" ? plan.monthlyOnAnnual : plan.monthlyOnMonthly;
-  return Math.round(((price - cost) / price) * 100);
+  return Math.round(((price - plan.costPerMonth) / price) * 100);
 }
 
 /**
- * Standard range — AMD EPYC 7000 series, DDR4 ECC.
+ * Mid budget — AMD EPYC 7000 series, DDR4 ECC.
  * Vanilla-block names, ascending.
  */
-export const standardPlans: Plan[] = [
-  buildPlan({
-    slug: "stone",
-    name: "Stone",
-    glyph: "stone",
-    tier: "standard",
-    vcpu: 1,
-    ramGb: 1,
-    storageGb: 40,
-    trafficTb: 3,
-    costEur: 4.57,
-    players: "1–3 players",
-    tagline: "A small world for a couple of friends",
-    stock: null,
-  }),
-  buildPlan({
-    slug: "copper",
-    name: "Copper",
-    glyph: "copper",
-    tier: "standard",
-    vcpu: 2,
-    ramGb: 4,
-    storageGb: 60,
-    trafficTb: 3,
-    costEur: 5.43,
-    players: "1–8 players",
-    tagline: "Vanilla SMP with friends",
-    stock: 3,
-  }),
+export const midPlans: Plan[] = [
   buildPlan({
     slug: "iron",
     name: "Iron",
     glyph: "iron",
-    tier: "standard",
+    tier: "mid",
     vcpu: 4,
     ramGb: 8,
     storageGb: 120,
     trafficTb: 3,
-    costEur: 6.57,
+    costPerMonth: 5.28,
     players: "10–25 players",
     tagline: "Paper or Spigot with a plugin stack",
     stock: 3,
@@ -227,105 +211,77 @@ export const standardPlans: Plan[] = [
     slug: "gold",
     name: "Gold",
     glyph: "gold",
-    tier: "standard",
+    tier: "mid",
     vcpu: 8,
     ramGb: 16,
     storageGb: 160,
     trafficTb: 3,
-    costEur: 14,
+    costPerMonth: 11.26,
     players: "30–60 players",
     tagline: "Forge and mid-weight modpacks",
-    stock: 4,
+    stock: 3,
   }),
   buildPlan({
     slug: "diamond",
     name: "Diamond",
     glyph: "diamond",
-    tier: "standard",
+    tier: "mid",
     vcpu: 8,
     ramGb: 32,
     storageGb: 240,
     trafficTb: 3,
-    costEur: 28,
+    costPerMonth: 22.51,
     players: "75–150 players",
     tagline: "Heavy modpacks and multi-world SMP",
-    stock: 4,
+    stock: 2,
   }),
 ];
 
 /**
- * Premium range — 4th Gen AMD EPYC 9000 series, DDR5 ECC.
- * Netherite, then overpowered modded blocks, topped by Void.
+ * High performance — 4th Gen AMD EPYC 9000 series, DDR5 ECC.
+ * Netherite, an overpowered modded block, then Void at the top.
  */
-export const premiumPlans: Plan[] = [
+export const highPlans: Plan[] = [
   buildPlan({
     slug: "netherite",
     name: "Netherite",
     glyph: "netherite",
-    tier: "premium",
-    vcpu: 1,
-    ramGb: 2,
-    storageGb: 40,
+    tier: "high",
+    vcpu: 4,
+    ramGb: 8,
+    storageGb: 120,
     trafficTb: 3,
-    costEur: 8,
-    players: "1–5 players",
-    tagline: "The cheapest way onto DDR5",
+    costPerMonth: 9.76,
+    players: "15–40 players",
+    tagline: "Paper networks on DDR5",
     stock: null,
   }),
   buildPlan({
     slug: "draconium",
     name: "Draconium",
     glyph: "draconium",
-    tier: "premium",
-    vcpu: 2,
-    ramGb: 4,
-    storageGb: 60,
+    tier: "high",
+    vcpu: 8,
+    ramGb: 16,
+    storageGb: 160,
     trafficTb: 3,
-    costEur: 8.71,
-    players: "5–15 players",
-    tagline: "Vanilla and light plugins, quicker ticks",
-    stock: null,
-  }),
-  buildPlan({
-    slug: "bedrockium",
-    name: "Bedrockium",
-    glyph: "bedrockium",
-    tier: "premium",
-    vcpu: 4,
-    ramGb: 8,
-    storageGb: 120,
-    trafficTb: 3,
-    costEur: 12.14,
-    players: "15–40 players",
-    tagline: "Paper networks and plugin-heavy SMP",
+    costPerMonth: 12.86,
+    players: "40–100 players",
+    tagline: "Kitchen-sink modpacks at full render",
     stock: null,
     popular: true,
     badge: "Most picked",
   }),
   buildPlan({
-    slug: "neutronium",
-    name: "Neutronium",
-    glyph: "neutronium",
-    tier: "premium",
-    vcpu: 8,
-    ramGb: 16,
-    storageGb: 160,
-    trafficTb: 3,
-    costEur: 16,
-    players: "40–100 players",
-    tagline: "Kitchen-sink modpacks at full render",
-    stock: null,
-  }),
-  buildPlan({
     slug: "void",
     name: "Void",
     glyph: "void",
-    tier: "premium",
+    tier: "high",
     vcpu: 8,
     ramGb: 32,
     storageGb: 240,
     trafficTb: 3,
-    costEur: 36.43,
+    costPerMonth: 29.29,
     players: "100+ players",
     tagline: "Proxy networks, events and hub shards",
     stock: null,
@@ -333,7 +289,11 @@ export const premiumPlans: Plan[] = [
   }),
 ];
 
-export const allPlans: Plan[] = [...standardPlans, ...premiumPlans];
+export const allPlans: Plan[] = [...midPlans, ...highPlans];
+
+export function plansFor(tier: PlanTier): Plan[] {
+  return tier === "mid" ? midPlans : highPlans;
+}
 
 export function findPlan(slug: string | undefined): Plan | undefined {
   if (!slug) return undefined;
@@ -372,7 +332,7 @@ export function formatUsd(value: number): string {
   });
 }
 
-/** Lowest-latency region available to a plan, used by "auto-select". */
+/** Lowest-latency region available to a range, used by "auto-select". */
 export function bestRegionFor(tier: PlanTier): Region {
   return regionsFor(tier).reduce((best, region) =>
     region.latencyMs < best.latencyMs ? region : best,

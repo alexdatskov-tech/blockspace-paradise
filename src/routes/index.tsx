@@ -32,11 +32,12 @@ import {
   formatUsd,
   platformFor,
   platforms,
-  premiumPlans,
+  plansFor,
   regionsFor,
   regionsForPlan,
-  standardPlans,
+  tierLabels,
   type Plan,
+  type PlanTier,
   type Region,
 } from "@/lib/plans";
 
@@ -44,7 +45,7 @@ const features = [
   {
     icon: Cpu,
     title: "AMD EPYC nodes, not oversold ones",
-    text: "The standard range runs on EPYC 7000-series nodes, the premium range on 4th Gen EPYC 9000-series with DDR5. We cap how many instances share a node so your tick loop keeps its CPU time.",
+    text: "The mid range runs on EPYC 7000-series nodes, the high range on 4th Gen EPYC 9000-series with DDR5. We cap how many instances share a node so your tick loop keeps its CPU time.",
   },
   {
     icon: HardDrive,
@@ -54,7 +55,7 @@ const features = [
   {
     icon: Network,
     title: "1 Gbps+ on every node",
-    text: "A 1 Gbps port minimum with several TB of included traffic, and multi-gigabit uplinks on the premium range.",
+    text: "Every plan ships a 1 Gbps port with 3 TB of traffic included, on both ranges.",
   },
   {
     icon: Terminal,
@@ -80,11 +81,11 @@ const faqs = [
   },
   {
     q: "Which regions can I deploy in, and do they cost more?",
-    a: "The two ranges sit in different datacentres, so they offer different regions. Standard: Amsterdam, Warsaw, Milan, Helsinki and Ashburn. Premium: Amsterdam, London, Madrid, Milan and Helsinki. Every region costs the same — there is no regional surcharge anywhere — and the region picker can auto-select the closest one for you.",
+    a: "The two ranges sit in different datacentres, so they offer different regions. Mid budget: Amsterdam, Helsinki, Milan, Ashburn and Warsaw. High performance: Amsterdam, Helsinki, London, Madrid and Milan. Every region costs the same — there is no regional surcharge anywhere — and the region picker can auto-select the closest one for you.",
   },
   {
     q: "Is there any tax or VAT added at checkout?",
-    a: "No. We bill 0% VAT and 0% sales tax: the price on the plan is the exact amount charged, with no surcharge added on the payment page.",
+    a: "No. We bill 0% VAT and 0% sales tax in every region — Dutch VAT, Finnish VAT, none of it is added on top. The price on the plan is the exact amount charged.",
   },
   {
     q: "Do I get SSH access to the server?",
@@ -381,11 +382,11 @@ function SpecCell({
 }
 
 function HomePage() {
-  const [tier, setTier] = useState<"standard" | "premium">("standard");
+  const [tier, setTier] = useState<PlanTier>("mid");
   const [annual, setAnnual] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const plans = tier === "standard" ? standardPlans : premiumPlans;
+  const plans = plansFor(tier);
 
   return (
     <main className="relative min-h-screen text-foreground">
@@ -510,7 +511,7 @@ function HomePage() {
                 aria-label="Plan range"
                 className="panel inline-flex rounded-lg p-1"
               >
-                {(["standard", "premium"] as const).map((option) => (
+                {(["mid", "high"] as const).map((option) => (
                   <button
                     key={option}
                     role="tab"
@@ -523,7 +524,7 @@ function HomePage() {
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {option === "standard" ? "Medium budget" : "Premium"}
+                    {tierLabels[option]}
                   </button>
                 ))}
               </div>
@@ -583,11 +584,7 @@ function HomePage() {
             </div>
           </Reveal>
 
-          <div
-            className={`mt-4 grid gap-4 sm:grid-cols-2 ${
-              tier === "premium" ? "lg:grid-cols-3" : "lg:grid-cols-4"
-            }`}
-          >
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {plans.map((plan, index) => (
               <Reveal key={plan.slug} delay={index * 60}>
                 <PlanCard plan={plan} annual={annual} />
@@ -598,7 +595,7 @@ function HomePage() {
           <Reveal className="mt-8">
             <ul className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2.5 text-xs text-muted-foreground">
               {[
-                "0% tax and 0% VAT — the price you see is the price you pay",
+                "0% VAT in every region — the price you see is the price you pay",
                 `Live in ${PROVISION_TIME}`,
                 "Free MySQL database",
                 "Free .blockforge.gg subdomain",

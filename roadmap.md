@@ -37,12 +37,10 @@
 
 ## Pricing model
 
-Retail prices are derived from the supplier's monthly EUR cost (`costEur` on
-each plan) rather than typed in, so a rate-card change means editing one number
-per plan. Three constants in `src/lib/plans.ts` control the rest:
+Retail prices are derived from the supplier's monthly USD cost (`costPerMonth`
+on each plan) rather than typed in, so a rate-card change means editing one
+number per plan. Two constants in `src/lib/plans.ts` control the rest:
 
-- `EUR_TO_USD` — conversion rate. **Update this when the rate moves**; it is a
-  hardcoded snapshot, not a live feed.
 - `MARKUP` — gross margin over cost, applied to the *yearly* rate (1.35 = 35%).
 - `MONTHLY_PREMIUM` — what paying monthly costs over the yearly rate (1.30),
   which is where the advertised annual saving comes from.
@@ -55,3 +53,19 @@ reports the margin on either cycle.
 We advertise and bill **0% VAT** (`VAT_RATE`). The supplier quotes VAT-exclusive
 prices, so that tax comes out of `MARKUP` — worth re-checking against real
 invoices before launch.
+
+## Provenance of the catalogue
+
+Worth keeping straight, because not all of it is sourced:
+
+**From the supplier's rate card** — vCPU, RAM, storage, port speed, included
+traffic, `costPerMonth`, stock counts and the per-range region codes. The six
+plans map one-to-one onto v2-mini/medium/heavy and v3-mini/medium/heavy.
+
+**Ours, invented** — every plan `name` and `glyph` (Iron, Gold, Diamond,
+Netherite, Draconium, Void), plus `tagline` and `players`. These are retail
+names for supplier SKUs, not upstream product names.
+
+**Ours, and not measured** — `Region.latencyMs`. Rough estimates that order the
+region list and drive "auto-select". They are shown to customers as "~12 ms".
+Replace them with real probe data before launch, or stop displaying them.
