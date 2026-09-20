@@ -10,9 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        hero: "bg-primary text-primary-foreground shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_24%,transparent)] hover:bg-primary/90 hover:-translate-y-0.5",
+        hero: "bg-primary text-primary-foreground shadow-[0_0_28px_color-mix(in_oklab,var(--primary)_24%,transparent)] hover:bg-primary/90 hover:-translate-y-0.5 transition-all duration-400 ease-out",
+        extreme:
+          "relative rounded-full font-bold bg-black text-emerald-400 border-2 border-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.35)] hover:bg-zinc-950 hover:text-emerald-300 hover:border-emerald-300 hover:shadow-[0_0_30px_rgba(52,211,153,0.65)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-400 ease-out",
         glass:
-          "border border-border bg-glass text-foreground backdrop-blur-xl hover:bg-accent hover:border-primary/30",
+          "border border-border bg-glass text-foreground backdrop-blur-xl hover:bg-accent hover:border-primary/30 transition-all duration-400 ease-out",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
@@ -26,6 +28,7 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
         xl: "h-12 rounded-md px-6 text-sm font-semibold",
+        extreme: "h-13 sm:h-14 rounded-full px-8 text-sm sm:text-base font-bold tracking-wide",
       },
     },
     defaultVariants: {

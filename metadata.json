@@ -1,0 +1,6 @@
+{
+  "name": "BlockForge",
+  "description": "High-performance Minecraft game server hosting platform with responsive plans, live status, and server management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
